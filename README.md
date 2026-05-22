@@ -37,8 +37,6 @@ A lightweight backend application that performs semantic search over a corpus of
 
 1. **Clone / Create project folder**
    ```bash
-   mkdir custom-semantic-search && cd custom-semantic-search
-   
    git clone https://github.com/Sai-Sashank/Custom-Semantic-Document-Search-Engine.git
 3. **Create documents folder and add files**:
    ```bash
