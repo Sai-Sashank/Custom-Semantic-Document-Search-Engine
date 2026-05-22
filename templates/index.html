@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Semantic Search</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 40px; 
+            background: #f4f4f4; 
+        }
+        .container { 
+            max-width: 900px; 
+            margin: auto; 
+            background: white; 
+            padding: 25px; 
+            border-radius: 10px; 
+            box-shadow: 0 0 15px rgba(0,0,0,0.1); 
+        }
+        input[type="text"] { 
+            width: 100%; 
+            padding: 14px; 
+            font-size: 16px; 
+            border: 1px solid #ccc; 
+            border-radius: 6px; 
+            box-sizing: border-box;
+        }
+        button { 
+            padding: 14px 28px; 
+            font-size: 16px; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            margin-top: 12px; 
+        }
+        button:hover { 
+            background: #0056b3; 
+        }
+
+        .result { 
+            margin-top: 20px; 
+            padding: 18px; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            background: #fafafa; 
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        .result strong {
+            font-size: 1.1em;
+            color: #333;
+        }
+        .score { 
+            color: #28a745; 
+            font-weight: bold; 
+            margin-left: 8px;
+        }
+        .snippet {
+            margin-top: 10px;
+            line-height: 1.5;
+            color: #444;
+            max-height: 120px;           /* Limit height */
+            overflow: hidden;            /* Hide overflow */
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;       /* Max 4 lines */
+            -webkit-box-orient: vertical;
+        }
+
+        h2 {
+            margin-top: 25px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Custom Semantic Document Search</h1>
+        
+        <input type="text" id="query" placeholder="Enter your search query... e.g. artificial intelligence in finance" />
+        <button onclick="search()">Search</button>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        async function search() {
+            const q = document.getElementById('query').value.trim();
+            if (!q) return alert("Please enter a query");
+
+            const resDiv = document.getElementById('results');
+            resDiv.innerHTML = '<p>Searching...</p>';
+
+            try {
+                const response = await fetch(`/search?q=${encodeURIComponent(q)}`);
+                const data = await response.json();
+
+                let html = `<h2>Top Results for: "${q}"</h2>`;
+                
+                if (data.results && data.results.length > 0) {
+                    data.results.forEach(r => {
+                        html += `
+                            <div class="result">
+                                <strong>${r.document}</strong> 
+                                ${r.title ? `<small style="color:#666;">(${r.title})</small>` : ''}
+                                <span class="score">(Score: ${r.score.toFixed(3)})</span>
+                                <div class="snippet">${r.snippet}</div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html += '<p>No results found.</p>';
+                }
+                
+                resDiv.innerHTML = html;
+            } catch (e) {
+                resDiv.innerHTML = '<p style="color:red">Error connecting to backend. Is the server running?</p>';
+            }
+        }
+
+        // Allow Enter key
+        document.getElementById('query').addEventListener('keypress', e => {
+            if (e.key === 'Enter') search();
+        });
+    </script>
+</body>
+</html>
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Semantic Search</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f4; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input[type="text"] { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 12px 24px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 4px; background: #fafafa; }
+        .score { color: #28a745; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Custom Semantic Document Search</h1>
+        
+        <input type="text" id="query" placeholder="Enter your search query... e.g. artificial intelligence in finance" />
+        <button onclick="search()">Search</button>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        async function search() {
+            const q = document.getElementById('query').value.trim();
+            if (!q) return alert("Please enter a query");
+
+            const resDiv = document.getElementById('results');
+            resDiv.innerHTML = '<p>Searching...</p>';
+
+            try {
+                const response = await fetch(`/search?q=${encodeURIComponent(q)}`);
+                const data = await response.json();
+
+                let html = `<h2>Top Results for: "${q}"</h2>`;
+                
+                if (data.results && data.results.length > 0) {
+                    data.results.forEach(r => {
+                        html += `
+                            <div class="result">
+                                <strong>${r.document}</strong> 
+                                <span class="score">(Score: ${r.score.toFixed(3)})</span>
+                                <p>${r.snippet}</p>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html += '<p>No results found.</p>';
+                }
+                
+                resDiv.innerHTML = html;
+            } catch (e) {
+                resDiv.innerHTML = '<p style="color:red">Error connecting to backend.</p>';
+            }
+        }
+
+        // Allow Enter key
+        document.getElementById('query').addEventListener('keypress', e => {
+            if (e.key === 'Enter') search();
+        });
+    </script>
+</body>
+</html> -->
