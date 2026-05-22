@@ -18,7 +18,6 @@ app.add_middleware(
 
 DOCS_DIR = "documents"
 
-# Globals
 vocabulary: List[str] = []
 vocab_index: Dict[str, int] = {}
 doc_vectors: Dict[str, List[float]] = {}
@@ -62,15 +61,14 @@ def build_index():
             content_tokens = tokenize(content)
             title_tokens = tokenize(title)
             
-            # Stronger title boost
-            combined = content_tokens + (title_tokens * 4)   # Increased from 3 to 4
+            combined = content_tokens + (title_tokens * 4)
             doc_tokens[filename] = combined
 
     if not doc_tokens:
         print("No documents found.")
         return
 
-    # Vocabulary
+    
     all_words = set()
     for tokens in doc_tokens.values():
         all_words.update(tokens)
@@ -79,16 +77,14 @@ def build_index():
     vocab_index = {word: i for i, word in enumerate(vocabulary)}
     N = len(doc_tokens)
 
-    # Document Frequency
+    
     df = defaultdict(int)
     for tokens in doc_tokens.values():
         for word in set(tokens):
             df[word] += 1
 
-    # Improved IDF
     idf_values = {word: math.log((N + 1) / (df[word] + 0.5)) + 1 for word in vocabulary}
 
-    # TF-IDF Vectors
     doc_vectors = {}
     for filename, tokens in doc_tokens.items():
         tf = defaultdict(int)
@@ -106,7 +102,6 @@ def build_index():
         
         doc_vectors[filename] = vector
 
-    # Snippets
     doc_snippets = {}
     for filename, content in raw_documents.items():
         lines = content.strip().split('\n')
