@@ -26,7 +26,7 @@ A lightweight backend application that performs semantic search over a corpus of
 ## Project Structure
 ├── app.py # Main backend with TF-IDF + API\
 ├── templates\
-    └── index.html # Minimal frontend UI\
+├──    └── index.html # Minimal frontend UI\
 ├── documents # Folder containing 50+ .txt files\
 ├── README.md\
 └── requirements.txt
